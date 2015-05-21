@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="ServicioTaxi" default="run" basedir=".">
+
+	<property name="src" location="src"/>
+	<property name="test-dir" location="test"/>
+	<property name="buildTest" location="buildTest"/>
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<property name="mainClass" value="es.unican.is2.radioTaxi.gui.RadioTaxiGUI"/>
+	<property name="projectName" value="ServicioTaxi"/>
+	
+	<property name="doc"   value="doc"/>
+	
+
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="Compile the source">
+		<javac srcdir="${src}" destdir="${build}">
+			<!--<exclude name="**/test/**"/>--> <!--Este sería necesario si lo hacemos con la estructura de datos de eclipse!-->
+			</javac>
+	</target>
+
+
+	<!--  Si no ponemos el fork se ejecuta en el mismo proceso de ant y muere -->
+	<target name="run" depends="compile, unitTest">
+		<java classname="${mainClass}" fork="true">
+			<classpath path="${build}"/>
+		</java>
+	</target>
+
+
+	<target name="doc">
+	    <mkdir dir="${doc}"/>
+		<javadoc packagenames="." sourcepath="${src}" destdir="${doc}" />
+	</target>
+
+	<!--  Si no ponemos el main-class del manifest, lo crea vacío y no funciona -->
+	<target name="createJar">
+		<manifest file="MANIFEST.MF">
+			<attribute name="Main-Class" value="${mainClass}" />
+		</manifest>
+		<mkdir dir="${dist}"/>
+		<jar destfile="${dist}/${projectName}.jar" basedir="${build}" manifest="MANIFEST.MF"/>
+	</target>
+
+   <target name="compileTest">
+	   <mkdir dir="${buildTest}"/>
+	   <javac srcdir="${test-dir}" destdir="${buildTest}" classpath="${build}"/>
+   </target>
+   
+  <target name="unitTest" depends="compileTest">
+	   
+	      <junit printsummary="true">
+			<test name="test.ServicioTaxiTest" outfile="resultTest"/>
+			<formatter type="xml"/>
+	      	<classpath>
+	      		<pathelement location="${buildTest}"/>
+	      		<pathelement location="${build}"/>
+	      	</classpath>
+		  </junit>
+		
+	 </target>	
+</project>
